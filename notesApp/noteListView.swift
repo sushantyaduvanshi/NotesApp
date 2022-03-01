@@ -17,8 +17,8 @@ class notes_cls: ObservableObject {
     @Published var notes:[note]
     
     init(){
-//        self.notes = Array(repeating: note(title: "i am", content: "new note"), count: 5)
-        self.notes = Array()
+        self.notes = Array(repeating: note(title: "i am", content: "new note"), count: 15)
+//        self.notes = Array()
     }
     
     func addNote(title:String, content:String) -> Void {
@@ -35,10 +35,10 @@ struct noteListView: View {
         Text(note.title)
             .font(.title3)
             .fontWeight(.semibold)
-            .foregroundColor(colorScheme == .dark ? .white.opacity(0.8):.black)
+            .foregroundColor(.white.opacity(0.8))
             .frame(maxWidth: .infinity, minHeight: 25.0, maxHeight: 25.0, alignment: .center)
             .padding()
-            .background(Color(colorScheme == .dark ? .black:.gray))
+            .background(Color(.black))
             .cornerRadius(10.0)
     }
 }
@@ -51,34 +51,38 @@ struct noteDetailView: View{
     @State private var titleOpac = 1.0
     @State private var contentOpac = 0.0
     @State var note_ind:Int? = nil
+    @Environment(\.colorScheme) var colorScheme
     
     init(note: note){
         UITextView.appearance().backgroundColor = .clear
         _note = State(initialValue: note)
+        print(colorScheme)
     }
     
     var body: some View{
         VStack(alignment: .leading, spacing: 30){
             
             if(!titleSelected){
-                Text(note.title == "" ? "Title":note.title)
-                    .padding(10.0)
-                    .font(.system(size: 30.0, weight: .bold, design: Font.Design.default))
-                    .frame(maxWidth: .infinity, minHeight: 100,
-                           maxHeight: 100)
-                    .cornerRadius(20.0)
-                    .multilineTextAlignment(.center)
-                    .onAppear(){
-                        titleOpac = 1.0
-                    }
-                    .onDisappear(){
-                        titleOpac = 0.0
-                    }
-                    .opacity(titleOpac)
-                    .animation(.easeInOut(duration: 1.0))
-                    .onTapGesture {
-                        titleSelected = true
-                    }
+                Button(action:{
+                    titleSelected = true
+                }){
+                    Text(note.title == "" ? "Title":note.title)
+                        .padding(10.0)
+                        .foregroundColor(.black)
+                        .font(.system(size: 30.0, weight: .bold, design: Font.Design.default))
+                        .frame(maxWidth: .infinity, minHeight: 100,
+                               maxHeight: 100)
+                        .cornerRadius(20.0)
+                        .multilineTextAlignment(.center)
+                        .onAppear(){
+                            titleOpac = 1.0
+                        }
+                        .onDisappear(){
+                            titleOpac = 0.0
+                        }
+                        .opacity(titleOpac)
+                        .animation(.easeInOut(duration: 1.0))
+                }
             }
             
             if(titleSelected){
@@ -113,24 +117,26 @@ struct noteDetailView: View{
             }
             
             if(titleSelected){
-                Text(note.content == "" ? "Some Content":note.content)
-                    .padding()
-                    .frame(maxWidth: .infinity, minHeight: 100,
-                           maxHeight: 100)
-                    .font(.system(size: 24.0, weight: .regular, design: Font.Design.default))
-                    .cornerRadius(20.0)
-                    .multilineTextAlignment(.center)
-                    .onAppear(){
-                        contentOpac = 1.0
-                    }
-                    .onDisappear(){
-                        contentOpac = 0.0
-                    }
-                    .opacity(contentOpac)
-                    .animation(.easeInOut(duration: 1.0))
-                    .onTapGesture(perform: {
-                        titleSelected = false
-                    })
+                Button(action: {
+                    titleSelected = false
+                }){
+                    Text(note.content == "" ? "Some Content":note.content)
+                        .padding()
+                        .frame(maxWidth: .infinity, minHeight: 100,
+                               maxHeight: 1000)
+                        .foregroundColor(.black)
+                        .font(.system(size: 24.0, weight: .regular, design: Font.Design.default))
+                        .cornerRadius(20.0)
+                        .multilineTextAlignment(.center)
+                        .onAppear(){
+                            contentOpac = 1.0
+                        }
+                        .onDisappear(){
+                            contentOpac = 0.0
+                        }
+                        .opacity(contentOpac)
+                        .animation(.easeInOut(duration: 1.0))
+                }
             }
             
             if(!titleSelected){
@@ -192,7 +198,8 @@ struct note_Preview: PreviewProvider {
 //            noteDetailView(note: note(title: "", content: ""))
             noteListView(note: note(title: "Hello", content: "World"))
                 
-            noteDetailView(note: note(title: "Hello HelloHelloHello HelloHello Hello Hello Hello Hello v", content: "Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? Hello World What are you doing..?? "))
+            noteDetailView(note: note(title: "", content: ""))
+                .preferredColorScheme(.light)
         }
         .environmentObject(notes_cls())
     }
